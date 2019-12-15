@@ -37,6 +37,6 @@ final class PrefixTree<SomeCollection: RangeReplaceableCollection> where SomeCol
   }
 
   func contains(prefix: SomeCollection) -> Bool {
-    prefix.reduce(into: self, { $0 = $0?.children[$1]}) != nil
+    return prefix.reduce(into: self, { $0 = $0?.children[$1]}) != nil
   }
 }

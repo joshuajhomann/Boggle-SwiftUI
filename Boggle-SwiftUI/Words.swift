@@ -14,7 +14,7 @@ enum Words {
   enum Error: Swift.Error {
     case invalidURL
   }
-  static func load() -> Future<PrefixTree<String>, Swift.Error> {
+  static func load(filter: @escaping (String) -> Bool) -> Future<PrefixTree<String>, Swift.Error> {
     .init { promise in
       DispatchQueue.global(qos: .userInteractive).async {
         guard let json = Bundle.main.url(forResource: "words" as String?, withExtension: "json") else {
@@ -24,7 +24,7 @@ enum Words {
           try JSONDecoder().decode([String].self, from: try Data(contentsOf: json))
         }) {
         case .success(let words):
-          promise(.success(PrefixTree<String>(elements: words)))
+          promise(.success(PrefixTree<String>(elements: words.filter(filter))))
         case .failure(let error):
           promise(.failure(error))
         }

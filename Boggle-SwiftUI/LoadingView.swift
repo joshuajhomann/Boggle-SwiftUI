@@ -42,12 +42,13 @@ struct BoardView: View {
 
   var body: some View {
     VStack {
-      HStack {
-        Text(self.game.isPlaying ? String(describing: self.game.time) : "Game Over").foregroundColor(self.timerColor())
-        Spacer()
-        Text(self.game.lastRecognizedWord)
-        Spacer()
-        Button("Reset", action: { self.game.reset() })
+      VStack {
+        HStack {
+          Text(self.game.isPlaying ? String(describing: self.game.time) : "Game Over").foregroundColor(self.timerColor())
+          Spacer()
+          Button("Reset", action: { self.game.reset() })
+        }
+        Text(self.game.lastRecognizedWord).padding()
       }
       .font(.largeTitle)
       .padding()
@@ -124,7 +125,9 @@ struct BoardView: View {
       }
       List {
         ForEach(self.game.allRecognizedWords) { recognized in
-          Text(recognized.word).font(.largeTitle)
+          Text(recognized.word)
+            .foregroundColor(recognized.wasFound ? Color.green : Color.red)
+            .font(.largeTitle)
         }
       }
     }
