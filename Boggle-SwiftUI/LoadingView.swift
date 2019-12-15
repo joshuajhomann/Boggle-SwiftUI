@@ -96,13 +96,12 @@ struct BoardView: View {
               let index = self.squares.firstIndex(where: { $0.contains(point)}) else {
                 return
             }
-            if self.selectedIndices.contains(index) {
+            guard !self.selectedIndices.contains(index) else {
               if index != self.selectedIndices.last {
                 self.selectedIndices.removeAll()
-                return self.dragState.value = .failed
-              } else {
-                return
+                self.dragState.value = .failed
               }
+              return
             }
             self.selectedIndices.append(index)
         }.onEnded { value in
@@ -116,7 +115,7 @@ struct BoardView: View {
             return
           }
           let word = self.selectedIndices
-            .map  {self.game.letters[$0] }
+            .map { self.game.letters[$0] }
             .reduce(into: "") { $0 = $0 + $1 }
             .lowercased()
           self.game.validate(word: word)

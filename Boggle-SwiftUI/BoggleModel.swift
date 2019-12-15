@@ -152,12 +152,14 @@ class BoggleModel: ObservableObject {
       }
     }
 
-    let all = (0..<Constant.dimension).flatMap { y -> [String] in
-      (0..<Constant.dimension).flatMap { x -> [String] in
-        let index = x + y * Constant.dimension
-        return adjacentWords(x: x, y: y, withPrefix: self.letters[index].lowercased(), excluding: .init([index]))
+    let all =
+      (0..<Constant.dimension).flatMap { y -> [String] in
+        (0..<Constant.dimension).flatMap { x -> [String] in
+          let index = x + y * Constant.dimension
+          return adjacentWords(x: x, y: y, withPrefix: self.letters[index].lowercased(), excluding: .init([index]))
+        }
       }
-    }
+
     return Array(Set(all)).sorted()
   }
 
