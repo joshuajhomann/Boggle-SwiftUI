@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		03620A1423A9360200651722 /* View+SideEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03620A1323A9360200651722 /* View+SideEffect.swift */; };
+		03620A1623A9362B00651722 /* DieView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03620A1523A9362B00651722 /* DieView.swift */; };
+		03620A1823A9365100651722 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03620A1723A9365100651722 /* BoardView.swift */; };
 		0367F33223936C2E00AF4E3D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0367F33123936C2E00AF4E3D /* AppDelegate.swift */; };
 		0367F33423936C2E00AF4E3D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0367F33323936C2E00AF4E3D /* SceneDelegate.swift */; };
 		0367F33623936C2E00AF4E3D /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0367F33523936C2E00AF4E3D /* LoadingView.swift */; };
@@ -20,6 +23,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		03620A1323A9360200651722 /* View+SideEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+SideEffect.swift"; sourceTree = "<group>"; };
+		03620A1523A9362B00651722 /* DieView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DieView.swift; sourceTree = "<group>"; };
+		03620A1723A9365100651722 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
 		0367F32E23936C2E00AF4E3D /* Boggle-SwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Boggle-SwiftUI.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0367F33123936C2E00AF4E3D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0367F33323936C2E00AF4E3D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -46,6 +52,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		03620A1923A9366D00651722 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				0367F33523936C2E00AF4E3D /* LoadingView.swift */,
+				03620A1723A9365100651722 /* BoardView.swift */,
+				03620A1523A9362B00651722 /* DieView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		03620A1A23A9368600651722 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				036C5F6823A4743D009F7863 /* BoggleModel.swift */,
+				036C5F6623A47419009F7863 /* PrefixTree.swift */,
+				036C5F6A23A47469009F7863 /* Words.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		0367F32523936C2E00AF4E3D = {
 			isa = PBXGroup;
 			children = (
@@ -69,10 +95,9 @@
 				036BC81223A55EB900E77BBD /* Boggle-SwiftUI.entitlements */,
 				0367F33123936C2E00AF4E3D /* AppDelegate.swift */,
 				0367F33323936C2E00AF4E3D /* SceneDelegate.swift */,
-				0367F33523936C2E00AF4E3D /* LoadingView.swift */,
-				036C5F6623A47419009F7863 /* PrefixTree.swift */,
-				036C5F6823A4743D009F7863 /* BoggleModel.swift */,
-				036C5F6A23A47469009F7863 /* Words.swift */,
+				03620A1923A9366D00651722 /* Views */,
+				03620A1A23A9368600651722 /* Models */,
+				03620A1323A9360200651722 /* View+SideEffect.swift */,
 				0367F33723936C3000AF4E3D /* Assets.xcassets */,
 				0367F33C23936C3000AF4E3D /* LaunchScreen.storyboard */,
 				0367F33F23936C3000AF4E3D /* Info.plist */,
@@ -161,10 +186,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03620A1423A9360200651722 /* View+SideEffect.swift in Sources */,
 				036C5F6B23A47469009F7863 /* Words.swift in Sources */,
 				0367F33223936C2E00AF4E3D /* AppDelegate.swift in Sources */,
 				0367F33423936C2E00AF4E3D /* SceneDelegate.swift in Sources */,
 				0367F33623936C2E00AF4E3D /* LoadingView.swift in Sources */,
+				03620A1623A9362B00651722 /* DieView.swift in Sources */,
+				03620A1823A9365100651722 /* BoardView.swift in Sources */,
 				036C5F6723A47419009F7863 /* PrefixTree.swift in Sources */,
 				036C5F6923A4743D009F7863 /* BoggleModel.swift in Sources */,
 			);

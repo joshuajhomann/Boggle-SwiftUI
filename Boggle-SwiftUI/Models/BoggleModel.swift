@@ -26,13 +26,11 @@ class BoggleModel: ObservableObject {
   @Published var allRecognizedWords: [Recognized] = []
   @Published var time = Constant.secondsOfGameTime
   @Published var isPlaying = true
+  @Published var selectedIndices: [Int] = []
   enum Constant {
     static let secondsOfGameTime = 60
     static let dimension = 4
     static let minimumWordLength = 3
-    static let adjacentOffsets: [(Int, Int)] = (-1...1)
-      .flatMap {y in (-1...1).map { x in (x,y)}}
-      .filter {(x,y) in !(x == 0 && y == 0)}
     static let dice = [
       "AEANEG",
       "AHSPCO",
@@ -51,6 +49,24 @@ class BoggleModel: ObservableObject {
       "TERWHV",
       "NUIHMQ",
     ]
+    static let adjacentIndices: [[Int]] = {
+      let adjacentOffsets: [(Int, Int)] = (-1...1)
+        .flatMap {y in (-1...1).map { x in (x,y)}}
+        .filter {(x,y) in !(x == 0 && y == 0)}
+      return (0..<dimension*dimension)
+        .map { index in
+          adjacentOffsets
+          .compactMap { (dx, dy) in
+            let x = (index % dimension)+dx
+            let y = (index / dimension)+dy
+            guard (0..<Constant.dimension).contains(x),
+              (0..<Constant.dimension).contains(y) else {
+                return nil
+            }
+            return x+y*dimension
+          }
+        }
+    }()
   }
 
   init() {
@@ -108,7 +124,7 @@ class BoggleModel: ObservableObject {
           return []
         }
         let allRecognizedWordsSet = Set(self.allRecognizedWords.map{$0.word})
-        let missed = solutions.filter{!allRecognizedWordsSet.contains($0)}.sorted()
+        let missed = solutions.filter{!allRecognizedWordsSet.contains($0)}
         return self.allRecognizedWords + missed.map { Recognized(word: $0, wasFound: false)}
       }
       .assign(to: \.allRecognizedWords, on: self)
@@ -118,49 +134,65 @@ class BoggleModel: ObservableObject {
     lastRecognizedWord = "Boggle"
   }
 
+  func selectLetter(at index: Int) -> Bool {
+    guard isPlaying else {
+      return false
+    }
+    guard !selectedIndices.contains(index) else {
+      if index == self.selectedIndices.last {
+        return true
+      }
+      selectedIndices.removeAll()
+      return false
+    }
+    selectedIndices.append(index)
+    return true
+  }
+
+  func finishSelection() {
+    guard isPlaying else {
+      return
+    }
+    defer {
+      selectedIndices.removeAll()
+    }
+    guard self.selectedIndices.count >= Constant.minimumWordLength else {
+      return
+    }
+    let word = selectedIndices
+      .map { self.letters[$0] }
+      .reduce(into: "") { $0 = $0 + $1 }
+      .lowercased()
+    validate(word: word)
+  }
+
   private func makeSolutions() -> [String] {
 
-    func adjacentWords(x: Int, y: Int, withPrefix prefix: String, excluding vistedIndices: Set<Int>) -> [String] {
+    func adjacentWords(index: Int, withPrefix prefix: String, excluding vistedIndices: Set<Int>) -> [String] {
       Constant
-        .adjacentOffsets
-        .compactMap { offset -> (Int, Int, Int)? in
-          let (dx, dy) = offset
-          let newX = x+dx
-          let newY = y+dy
-          guard (0..<Constant.dimension).contains(newX),
-            (0..<Constant.dimension).contains(newY) else {
-              return nil
-          }
-          let index = newX + newY * Constant.dimension
-          guard !vistedIndices.contains(index) else {
-            return nil
-          }
-          return (newX, newY, index)
-      }
-      .flatMap { combined -> [String] in
-        let (x, y, index) = combined
-        var newVistedIndices = vistedIndices
-        newVistedIndices.insert(index)
+      .adjacentIndices[index]
+      .flatMap { index -> [String] in
+        guard !vistedIndices.contains(index) else {
+          return []
+        }
         let newPrefix = prefix + self.letters[index].lowercased()
         guard self.words.contains(prefix: newPrefix) else {
           return []
         }
+        var newVistedIndices = vistedIndices
+        newVistedIndices.insert(index)
         if self.words.contains(newPrefix) {
-          return [newPrefix] + adjacentWords(x: x, y: y, withPrefix: newPrefix, excluding: newVistedIndices)
+          return [newPrefix] + adjacentWords(index: index, withPrefix: newPrefix, excluding: newVistedIndices)
         }
-        return adjacentWords(x: x, y: y, withPrefix: newPrefix, excluding: newVistedIndices)
+        return adjacentWords(index: index, withPrefix: newPrefix, excluding: newVistedIndices)
       }
     }
 
-    let all =
-      (0..<Constant.dimension).flatMap { y -> [String] in
-        (0..<Constant.dimension).flatMap { x -> [String] in
-          let index = x + y * Constant.dimension
-          return adjacentWords(x: x, y: y, withPrefix: self.letters[index].lowercased(), excluding: .init([index]))
-        }
-      }
-
-    return Array(Set(all)).sorted()
+    return Array(Set(
+      (0..<Constant.dimension * Constant.dimension).flatMap {
+        adjacentWords(index: $0, withPrefix: self.letters[$0].lowercased(), excluding: .init([$0]))
+      }.sorted()
+    ))
   }
 
 }

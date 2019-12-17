@@ -1,8 +1,8 @@
 //
-//  ContentView.swift
+//  BoardView.swift
 //  Boggle-SwiftUI
 //
-//  Created by Joshua Homann on 12/1/19.
+//  Created by Joshua Homann on 12/17/19.
 //  Copyright © 2019 raya. All rights reserved.
 //
 
@@ -13,7 +13,6 @@ struct BoardView: View {
   @EnvironmentObject var game: BoggleModel
   @State private var squareSize: CGFloat = 0
   @State private var squares: [CGRect] = []
-  @State private var selectedIndices: [Int] = []
   private var dragState: CurrentValueSubject<DragState, Never> = .init(.notDragging)
   private enum DragState {
     case dragging, failed, notDragging
@@ -32,11 +31,11 @@ struct BoardView: View {
   private func timerColor() -> Color {
     switch self.game.time {
     case 0..<20:
-      return Color.red
+      return .red
     case 20..<40:
-      return Color.yellow
+      return .yellow
     default:
-      return Color.green
+      return .green
     }
   }
 
@@ -59,7 +58,7 @@ struct BoardView: View {
               ForEach (0..<BoggleModel.Constant.dimension) { x in
                 DieView(
                   letter: self.game.letters[Self.index(x: x, y: y)],
-                  isHighlighted: self.selectedIndices.contains(Self.index(x: x, y: y)),
+                  isHighlighted: self.game.selectedIndices.contains(Self.index(x: x, y: y)),
                   isDisabled: !self.game.isPlaying
                 )
                 .frame(width: self.squareSize, height: self.squareSize)
@@ -86,39 +85,17 @@ struct BoardView: View {
               }
             }
           }
-        }.gesture(DragGesture()
+        }
+        .gesture(DragGesture()
           .onChanged { value in
-            guard self.game.isPlaying else {
-              return
-            }
             let point = value.location
             guard self.dragState.value != .failed,
               let index = self.squares.firstIndex(where: { $0.contains(point)}) else {
                 return
             }
-            guard !self.selectedIndices.contains(index) else {
-              if index != self.selectedIndices.last {
-                self.selectedIndices.removeAll()
-                self.dragState.value = .failed
-              }
-              return
-            }
-            self.selectedIndices.append(index)
-        }.onEnded { value in
-          guard self.game.isPlaying else {
-            return
-          }
-          defer {
-            self.selectedIndices.removeAll()
-          }
-          guard self.selectedIndices.count >= BoggleModel.Constant.minimumWordLength else {
-            return
-          }
-          let word = self.selectedIndices
-            .map { self.game.letters[$0] }
-            .reduce(into: "") { $0 = $0 + $1 }
-            .lowercased()
-          self.game.validate(word: word)
+            self.dragState.value = self.game.selectLetter(at: index) ? .dragging : .failed
+          }.onEnded { value in
+            self.game.finishSelection()
           }
         )
       }
@@ -130,53 +107,5 @@ struct BoardView: View {
         }
       }
     }
-  }
-}
-
-struct DieView: View {
-  var letter: String
-  var isHighlighted: Bool
-  var isDisabled: Bool
-  var body: some View {
-    ZStack {
-      Rectangle()
-        .fill(color())
-        .cornerRadius(16)
-        .shadow(color: Color.black, radius: 2, x: 2, y: 2)
-      Text(letter)
-        .fontWeight(.black)
-        .font(.largeTitle)
-    }
-  }
-  private func color() -> Color {
-    if isDisabled {
-      return Color.gray
-    } else if isHighlighted {
-      return Color.yellow
-    }
-    return  Color(white: 0.95)
-  }
-}
-
-struct LoadingView: View {
-  @EnvironmentObject var game: BoggleModel
-  @State var dimension: CGFloat = 0
-  var body: some View {
-    game.isLoaded
-      ? AnyView(BoardView().padding())
-      : AnyView(Text("Loading..."))
-  }
-}
-
-struct ContentView_Previews: PreviewProvider {
-  static var previews: some View {
-    LoadingView().environmentObject(BoggleModel())
-  }
-}
-
-extension View {
-  func sideEffect(_ sideEffect: @escaping () -> Void) -> some View {
-    sideEffect()
-    return self
   }
 }
