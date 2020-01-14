@@ -3,7 +3,7 @@
 //  Boggle-SwiftUI
 //
 //  Created by Joshua Homann on 12/17/19.
-//  Copyright © 2019 raya. All rights reserved.
+//  Copyright © 2019 Joshua Homann. All rights reserved.
 //
 
 import SwiftUI
@@ -16,6 +16,7 @@ struct DieView: View {
     ZStack {
       Rectangle()
         .fill(color())
+        .animation(.easeInOut)
         .cornerRadius(16)
         .shadow(color: Color.black, radius: 2, x: 2, y: 2)
       Text(letter)

@@ -3,7 +3,7 @@
 //  Boggle-SwiftUI
 //
 //  Created by Joshua Homann on 12/1/19.
-//  Copyright © 2019 raya. All rights reserved.
+//  Copyright © 2019 Joshua Homann. All rights reserved.
 //
 
 import SwiftUI
