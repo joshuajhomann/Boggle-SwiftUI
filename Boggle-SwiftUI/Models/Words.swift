@@ -3,7 +3,6 @@
 //  Boggle-SwiftUI
 //
 //  Created by Joshua Homann on 12/13/19.
-//  Copyright © 2019 raya. All rights reserved.
 //
 
 import Foundation
@@ -11,24 +10,16 @@ import Combine
 import UIKit
 
 enum Words {
-  enum Error: Swift.Error {
-    case invalidURL
-  }
-  static func load(filter predicate: @escaping (String) -> Bool) -> Future<PrefixTree<String>, Swift.Error> {
-    .init { promise in
-      DispatchQueue.global(qos: .userInteractive).async {
-        guard let json = Bundle.main.url(forResource: "words" as String?, withExtension: "json") else {
-          return promise(.failure(Error.invalidURL))
-        }
-        switch (Result {
-          try JSONDecoder().decode([String].self, from: try Data(contentsOf: json))
-        }) {
-        case .success(let words):
-          promise(.success(PrefixTree<String>(elements: words.filter(predicate))))
-        case .failure(let error):
-          promise(.failure(error))
-        }
-      }
+    enum Error: Swift.Error {
+        case invalidURL
     }
-  }
+    static func load(filter predicate: @escaping (String) -> Bool) async throws -> PrefixTree<String> {
+        try await Task<PrefixTree<String>, Swift.Error>(priority: .high) {
+            guard let json = Bundle.main.url(forResource: "words" as String, withExtension: "json") else {
+                throw Error.invalidURL
+            }
+            let words = try JSONDecoder().decode([String].self, from: try Data(contentsOf: json))
+            return PrefixTree<String>(elements: words.filter(predicate))
+        }.value
+    }
 }

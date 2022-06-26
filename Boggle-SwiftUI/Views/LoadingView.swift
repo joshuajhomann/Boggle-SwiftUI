@@ -9,18 +9,19 @@
 import SwiftUI
 
 struct LoadingView: View {
-  @EnvironmentObject var game: BoggleModel
-  @State var dimension: CGFloat = 0
-  var body: some View {
-    game.isLoaded
-      ? AnyView(BoardView().padding())
-      : AnyView(Text("Loading..."))
-  }
+    @EnvironmentObject private var game: BoggleModel
+    var body: some View {
+        if game.isLoaded {
+            BoardView().padding()
+        } else {
+            Text("Loading...").task { await game() }
+        }
+    }
 }
 
 struct ContentView_Previews: PreviewProvider {
-  static var previews: some View {
-    LoadingView().environmentObject(BoggleModel())
-  }
+    static var previews: some View {
+        LoadingView().environmentObject(BoggleModel())
+    }
 }
 
